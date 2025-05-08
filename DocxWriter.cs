@@ -7,14 +7,26 @@ namespace StoryExtractor
     {
         public static void SaveTextListToDocx(List<string> texts, string outputPath)
         {
-            using (var doc = DocX.Create(outputPath))
+            using var doc = DocX.Create(outputPath);
+
+            var title = doc.InsertParagraph(Path.GetFileNameWithoutExtension(outputPath));
+            title.FontSize(28);
+            title.SpacingAfter(10);
+
+            int counter = 1;
+            foreach (var text in texts)
             {
-                foreach (var text in texts)
-                {
-                    InsertMarkdownParagraph(doc, text);
-                }
-                doc.Save();
+                var paragraph = doc.InsertParagraph($"Chapter {counter}");
+                paragraph.StyleId = "Heading1";
+                paragraph.SpacingAfter(10);
+                ++counter;
+
+                InsertMarkdownParagraph(doc, text);
+
+                doc.InsertSectionPageBreak();
             }
+
+            doc.Save();
         }
 
         public static void InsertMarkdownParagraph(DocX doc, string markdown)
