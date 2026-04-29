@@ -5,7 +5,7 @@ namespace StoryExtractor
 {
     public class DocxWriter
     {
-        public static void SaveTextListToDocx(List<string> texts, string outputPath)
+        public static void SaveTextListToDocx(List<string> texts, string outputPath, bool chapters)
         {
             using var doc = DocX.Create(outputPath);
 
@@ -13,17 +13,25 @@ namespace StoryExtractor
             title.FontSize(28);
             title.SpacingAfter(10);
 
-            int counter = 1;
-            foreach (var text in texts)
+            if (chapters)
             {
-                var paragraph = doc.InsertParagraph($"Chapter {counter}");
-                paragraph.StyleId = "Heading1";
-                paragraph.SpacingAfter(10);
-                ++counter;
+                int counter = 1;
+                foreach (var text in texts)
+                {
+                    var paragraph = doc.InsertParagraph($"Chapter {counter}");
+                    paragraph.StyleId = "Heading1";
+                    paragraph.SpacingAfter(10);
+                    ++counter;
 
-                InsertMarkdownParagraph(doc, text);
+                    InsertMarkdownParagraph(doc, text);
 
-                doc.InsertSectionPageBreak();
+                    doc.InsertSectionPageBreak();
+                }
+            }
+            else
+            {
+                foreach (var text in texts)
+                    InsertMarkdownParagraph(doc, text);
             }
 
             doc.Save();

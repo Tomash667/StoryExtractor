@@ -1,17 +1,31 @@
-﻿using StoryExtractor;
-using System.Globalization;
+﻿using System.Globalization;
 
-public static partial class Program
+namespace StoryExtractor
 {
-    public static void Main(string[] args)
+    public static partial class Program
     {
-        if (args.Length != 1)
-            return;
+        public static void Main(string[] args)
+        {
+            if (args.Length != 1)
+                return;
 
-        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
-        CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
+            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
 
-        var modelTexts = JsonExtractor.ExtractModelContents(args[0]);
-        DocxWriter.SaveTextListToDocx(modelTexts, args[0] + ".docx");
+            List<string> contents;
+            bool chapters;
+            if (Path.GetExtension(args[0]) == ".txt")
+            {
+                contents = TxtExtractor.ExtractContents(args[0]);
+                chapters = false;
+            }
+            else
+            {
+                contents = JsonExtractor.ExtractModelContents(args[0]);
+                chapters = true;
+            }
+            string path = Path.GetFileNameWithoutExtension(args[0]) + ".docx";
+            DocxWriter.SaveTextListToDocx(contents, path, chapters);
+        }
     }
 }
