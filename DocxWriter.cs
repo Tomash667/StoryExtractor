@@ -3,7 +3,7 @@ using Xceed.Words.NET;
 
 namespace StoryExtractor
 {
-    public class DocxWriter
+    public partial class DocxWriter
     {
         public static void SaveTextListToDocx(List<string> texts, string outputPath, bool chapters)
         {
@@ -42,14 +42,14 @@ namespace StoryExtractor
             var paragraph = doc.InsertParagraph();
 
             int lastIndex = 0;
-            var italicRegex = new Regex(@"\*(?!\*\*)([^*\n]+)\*"); // Matches *text* but not *** or **
+            var italicRegex = ItalicRegex(); // Matches *text* but not *** or **
 
             foreach (Match match in italicRegex.Matches(markdown))
             {
                 // Add text before the match
                 if (match.Index > lastIndex)
                 {
-                    string before = markdown.Substring(lastIndex, match.Index - lastIndex);
+                    string before = markdown[lastIndex..match.Index];
                     paragraph.Append(before);
                 }
 
@@ -63,11 +63,14 @@ namespace StoryExtractor
             // Add remaining text
             if (lastIndex < markdown.Length)
             {
-                string remaining = markdown.Substring(lastIndex);
+                string remaining = markdown[lastIndex..];
                 paragraph.Append(remaining);
             }
 
             paragraph.SpacingAfter(10);
         }
+
+        [GeneratedRegex(@"\*(?!\*\*)([^*\n]+)\*")]
+        private static partial Regex ItalicRegex();
     }
 }

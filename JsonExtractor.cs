@@ -12,7 +12,7 @@ namespace StoryExtractor
             var jsonText = File.ReadAllText(jsonFilePath);
             var jsonObj = JsonConvert.DeserializeObject<JObject>(jsonText);
 
-            var chunks = jsonObj["chunkedPrompt"]["chunks"] as JArray;
+            var chunks = jsonObj?["chunkedPrompt"]?["chunks"] as JArray ?? throw new Exception("Invalid json file format");
             foreach (var item in chunks)
             {
                 var role = item["role"]?.ToString();

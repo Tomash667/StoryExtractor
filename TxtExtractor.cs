@@ -24,7 +24,7 @@
                 }
                 else
                 {
-                    parts.Add(text.Substring(currentPos, end - currentPos).Trim());
+                    parts.Add(text[currentPos..end].Trim());
                     currentPos = end;
                 }
             }
